@@ -5,7 +5,7 @@ public class Pyroprint{
    private String appliedRegion;
    double[] pHeight;
 
-   public Pyroprint(int pyroID, 
+   public Pyroprint(int pyroId, 
          String isolateId, 
          String commonName, 
          String appliedRegion,
@@ -38,8 +38,8 @@ public class Pyroprint{
    public double[] getPHeight(){
       return pHeight;
    }
-   public String toString(Object other){
-      return pyroId + " " + commonName;
+   public String toString(){
+      return this.pyroId + ":" + this.isolateId + ":" + this.commonName +":" + this.appliedRegion + ":[" + pHeight.length + "]";
    }
    public boolean equals(Object other){
       if(other == null) return false;
