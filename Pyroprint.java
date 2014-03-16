@@ -38,6 +38,9 @@ public class Pyroprint{
    public double[] getPHeight(){
       return pHeight;
    }
+   public int getNumPHeights(){
+      return pHeight.length;
+   }
    public String toString(){
       return this.pyroId + ":" + this.isolateId + ":" + this.commonName +":" + this.appliedRegion + ":[" + pHeight.length + "]";
    }
