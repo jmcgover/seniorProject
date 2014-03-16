@@ -6,12 +6,75 @@ public class Data{
 
    /* private Instance variables
     */
-   private static final String DEFAULT_FILENAME = "pyroprints.csv";
+   private static final String DEFAULT_DATASET = "pyroprints.csv";
+   private static final String DEFAULT_UNKNOWN = "unknown.csv";
    private static final int MAX_PHEIGHT_VALS = 103;
-   private static ArrayList<Pyroprint> pyroData = new ArrayList<Pyroprint>();
+   private static ArrayList<Pyroprint> pyroData;
+   private static Pyroprint unknownPyroprint;
 
    public static void main(String[] args){
-      readData();
+      pyroData = new ArrayList<Pyroprint>();
+      readDataSet();
+      unknownPyroprint = readUnknown();
+      System.out.println("unknown: " + unknownPyroprint.toString());
+
+   }
+   public static Scanner getFileScanner(String goal, String defaultName){//==>
+      Scanner input = new Scanner(System.in);
+      while(true){
+         try{
+            String inFileName;
+            System.out.print(goal + " filename (press RETURN for ' " + defaultName  +"'): ");
+            inFileName = input.nextLine();
+            if(inFileName.isEmpty()){
+               return new Scanner(new File(defaultName)).useDelimiter(",");
+            }
+            return new Scanner(new File(inFileName)).useDelimiter(",");
+         }
+         catch(FileNotFoundException e){
+            System.out.println("could not find file");
+         }
+      }
+   }//<==
+
+   public static Pyroprint readUnknown(){//==>
+      String dataHeader;            //May not use this, but want it anyway
+      int pyroId;
+      String isolateId;
+      String commonName;
+      String appliedRegion;
+      double[] pHeightTemp = null;  //ArrayList implementation would 
+      int numPHeights = 0;          //remove necessity for numPHeights
+      double[] pHeight = null;
+      Scanner inputFile = getFileScanner("unknown",DEFAULT_DATASET);
+
+      dataHeader = inputFile.nextLine();
+      /* Reads the metadata for each pyroprint entry
+       */
+      pyroId = inputFile.nextInt();
+      isolateId = inputFile.next();
+      commonName = inputFile.next();
+      appliedRegion = inputFile.next();
+
+      /* Temporarily reads in pHeight data and tracks how many values
+       * the input file provides, then creates a new array of the
+       * appropriate size and copies into the array that is used to build
+       * the Pyroprint object.
+       */
+      numPHeights = 0;
+      pHeightTemp = new double[MAX_PHEIGHT_VALS];
+      while(inputFile.hasNextDouble()){
+         pHeightTemp[numPHeights] = inputFile.nextDouble();
+         numPHeights++;
+      }
+      pHeight = new double[numPHeights];
+      for(int arrCopy = 0; arrCopy < pHeight.length; arrCopy++){
+         pHeight[arrCopy] = pHeightTemp[arrCopy];
+      }
+      inputFile.close();
+      /* Builds the pyroPrint data structure.//<==
+       */
+      return new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight);
    }
 
    /**
@@ -22,7 +85,7 @@ public class Data{
     *
     * and adds a new PyroPrint object to the data structure.
     */
-   public static void readData(){//==>
+   public static void readDataSet(){//==>
       String dataHeader;            //May not use this, but want it anyway
       int pyroId;
       String isolateId;
@@ -31,26 +94,7 @@ public class Data{
       double[] pHeightTemp = null;  //ArrayList implementation would 
       int numPHeights = 0;          //remove necessity for numPHeights
       double[] pHeight = null;
-
-      Scanner input = new Scanner(System.in);
-      Scanner inputFile = null;
-      boolean getFileInput = true;
-
-      while(getFileInput){
-         try{
-            String inFileName;
-            System.out.print("filename (press RETURN for ' "+ DEFAULT_FILENAME  +"'): ");
-            inFileName = input.nextLine();
-            if(inFileName.isEmpty()){
-               inFileName = DEFAULT_FILENAME;
-            }
-            inputFile = new Scanner(new File(inFileName)).useDelimiter(",");
-            getFileInput = false;
-         }
-         catch(FileNotFoundException e){
-            System.out.println("could not find file");
-         }
-      }
+      Scanner inputFile = getFileScanner("dataset",DEFAULT_DATASET);
 
       dataHeader = inputFile.nextLine();
       while(inputFile.hasNext()){
@@ -99,5 +143,6 @@ public class Data{
          System.out.println((pyroData.get(pyroData.size()-1)).toString());
          inputFile.nextLine();
       }
+      inputFile.close();
    }//<==
 }
