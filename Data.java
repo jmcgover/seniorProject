@@ -23,7 +23,7 @@ public class Data{
     * and adds a new PyroPrint object to the data structure.
     */
    public static void readData(){//==>
-      String dataHeader;
+      String dataHeader;            //May not use this, but want it anyway
       int pyroId;
       String isolateId;
       String commonName;
@@ -51,34 +51,33 @@ public class Data{
             System.out.println("could not find file");
          }
       }
+
       dataHeader = inputFile.nextLine();
+      while(inputFile.hasNext()){
 
-//      try{
-         while(inputFile.hasNext()){
+         /* Reads the metadata for each pyroprint entry
+          */
+         pyroId = inputFile.nextInt();
+         isolateId = inputFile.next();
+         commonName = inputFile.next();
+         appliedRegion = inputFile.next();
 
-            /* Reads the metadata for each pyroprint entry
-             */
-            pyroId = inputFile.nextInt();
-            isolateId = inputFile.next();
-            commonName = inputFile.next();
-            appliedRegion = inputFile.next();
-
-            /* Temporarily reads in pHeight data and tracks how many values
-             * the input file provides, then creates a new array of the
-             * appropriate size and copies into the array that is used to build
-             * the Pyroprint object.
-             */
-            numPHeights = 0;
-            pHeightTemp = new double[MAX_PHEIGHT_VALS];
-            while(inputFile.hasNextDouble()){
-               pHeightTemp[numPHeights] = inputFile.nextDouble();
-               numPHeights++;
-            }
-            pHeight = new double[numPHeights];
-            for(int arrCopy = 0; arrCopy < pHeight.length; arrCopy++){
-               pHeight[arrCopy] = pHeightTemp[arrCopy];
-            }
-
+         /* Temporarily reads in pHeight data and tracks how many values
+          * the input file provides, then creates a new array of the
+          * appropriate size and copies into the array that is used to build
+          * the Pyroprint object.
+          */
+         numPHeights = 0;
+         pHeightTemp = new double[MAX_PHEIGHT_VALS];
+         while(inputFile.hasNextDouble()){
+            pHeightTemp[numPHeights] = inputFile.nextDouble();
+            numPHeights++;
+         }
+         pHeight = new double[numPHeights];
+         for(int arrCopy = 0; arrCopy < pHeight.length; arrCopy++){
+            pHeight[arrCopy] = pHeightTemp[arrCopy];
+         }
+         /*GARBAGE I DONT WANT TO DELETE*/ //==>
 //            for(int arrLoc = 0; arrLoc < pHeight.length && inputFile.hasNextDouble(); arrLoc++){
 //               System.out.print("[" + arrLoc  +"]=");
 //               pHeight[arrLoc] = inputFile.nextDouble();
@@ -92,12 +91,13 @@ public class Data{
 //               }
 //            }
 //            System.out.print("# pHeights = " +numPHeights + " for: ");
+//<==
 
-            /* Builds the pyroPrint data structure.
-             */
-            pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
-            System.out.println((pyroData.get(pyroData.size()-1)).toString());
-            inputFile.nextLine();
-         }
+         /* Builds the pyroPrint data structure.
+          */
+         pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
+         System.out.println((pyroData.get(pyroData.size()-1)).toString());
+         inputFile.nextLine();
+      }
    }//<==
 }
