@@ -10,21 +10,50 @@ public class Data{
    private static final String DEFAULT_UNKNOWN = "unknown.csv";
    private static final int MAX_PHEIGHT_VALS = 103;
    private static ArrayList<Pyroprint> pyroData;
-   private static Pyroprint unknownPyroprint;
+   private static Pyroprint unknownPyro;
+   private static ArrayList<Distance> pearsonCorrelation;
 
    public static void main(String[] args){
       pyroData = new ArrayList<Pyroprint>();
       readDataSet();
-      unknownPyroprint = readUnknown();
-      System.out.println("unknown: " + unknownPyroprint.toString());
-
+      unknownPyro = readSingular("unknown");
+      System.out.println("unknown: " + unknownPyro.toString());
+      calculateDistances();
+      Collections.sort(pearsonCorrelation);
+      for(int corrLoc = 0; corrLoc < pearsonCorrelation.size(); corrLoc++){
+         System.out.println(corrLoc + ": " + pearsonCorrelation.get(corrLoc).toString());
+      }
+      System.out.println("unknown: " + unknownPyro.toString());
    }
+   public static void calculateDistances(){
+      int dataSetLoc = -1;
+      pearsonCorrelation = new ArrayList<Distance>();
+      System.out.print("Caught unequal vectors: ");
+      while(++dataSetLoc < pyroData.size()){
+         try{
+           pearsonCorrelation.add(new Distance(unknownPyro.pearsonDist(pyroData.get(dataSetLoc)),pyroData.get(dataSetLoc)));
+         }
+         catch(Pyroprint.IncomparableVectorException e){
+//            System.out.println("size not equal to " + unknownPyro.getNumPHeights()  + ": " + pyroData.get(dataSetLoc).toString() );
+            System.out.print(pyroData.get(dataSetLoc).getPyroId() + " " + pyroData.get(dataSetLoc).getNumPHeights()+ ", ");
+         }
+      }
+   }
+   /**
+    * Retrieves input from the user via System.in for an existing file and
+    * returns a Scanner object of a successfully opened file.
+    *
+    * @param String goal, the type of file requested
+    * @param String defaultName, the default filename, for ease of testing
+    *
+    * @return Scanner of the File requested by the user
+    */
    public static Scanner getFileScanner(String goal, String defaultName){//==>
       Scanner input = new Scanner(System.in);
       while(true){
          try{
             String inFileName;
-            System.out.print(goal + " filename (press RETURN for ' " + defaultName  +"'): ");
+            System.out.print(goal + " filename (press RETURN for '" + defaultName  +"'): ");
             inFileName = input.nextLine();
             if(inFileName.isEmpty()){
                return new Scanner(new File(defaultName)).useDelimiter(",");
@@ -37,8 +66,17 @@ public class Data{
       }
    }//<==
 
-   public static Pyroprint readUnknown(){//==>
-      String dataHeader;            //May not use this, but want it anyway
+   /**
+    * Reads a .csv file with a header as follows:
+    *
+    * PyroId,IsolateId,CommonName,AppliedRegion,pHyyeight(0),...,pHeight(103)
+    *
+    * and reads the first entry, assuming that it is the sole entry.
+    *
+    * @return Pyroprint object of the read pyroprint
+    */
+   public static Pyroprint readSingular(String reason){//==>
+      String dataHeader;            //May not ever use this, but want it anyway
       int pyroId;
       String isolateId;
       String commonName;
@@ -46,7 +84,7 @@ public class Data{
       double[] pHeightTemp = null;  //ArrayList implementation would 
       int numPHeights = 0;          //remove necessity for numPHeights
       double[] pHeight = null;
-      Scanner inputFile = getFileScanner("unknown",DEFAULT_DATASET);
+      Scanner inputFile = getFileScanner(reason, DEFAULT_DATASET);
 
       dataHeader = inputFile.nextLine();
       /* Reads the metadata for each pyroprint entry
@@ -72,21 +110,21 @@ public class Data{
          pHeight[arrCopy] = pHeightTemp[arrCopy];
       }
       inputFile.close();
-      /* Builds the pyroPrint data structure.//<==
+      /* Builds the pyroPrint data structure.
        */
       return new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight);
-   }
+   }//<==
 
    /**
     * Requests input from the console for the filename of a .csv file
     * containing pyroprint data in this format:
     *
-    * PyroId,IsolateId,CommonName,AppliedRegion,pHeight(0),...,pHeight(103)
+    * PyroId,IsolateId,CommonName,AppliedRegion,pHyyeight(0),...,pHeight(103)
     *
     * and adds a new PyroPrint object to the data structure.
     */
    public static void readDataSet(){//==>
-      String dataHeader;            //May not use this, but want it anyway
+      String dataHeader;            //May not ever use this, but want it anyway
       int pyroId;
       String isolateId;
       String commonName;
@@ -140,7 +178,7 @@ public class Data{
          /* Builds the pyroPrint data structure.
           */
          pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
-         System.out.println((pyroData.get(pyroData.size()-1)).toString());
+//         System.out.println((pyroData.get(pyroData.size()-1)).toString());
          inputFile.nextLine();
       }
       inputFile.close();
