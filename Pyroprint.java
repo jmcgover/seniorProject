@@ -59,10 +59,10 @@ public class Pyroprint{
                +this.pHeight.length + "] other[" + other.pHeight.length + "]");
       }
       double covariance = covariance(this.pHeight,other.pHeight);
-      double thisVariance = variance(this.pHeight);
-      double otherVariance = variance(other.pHeight);
+      double thisStandardDev = standardDev(this.pHeight);
+      double otherStandardDev = standardDev(other.pHeight);
 
-      return covariance/(thisVariance*otherVariance);
+      return covariance/(thisStandardDev*otherStandardDev);
    }
    //PRIVATE HELPERS
    /**
@@ -112,15 +112,15 @@ public class Pyroprint{
     * @return double type variance of the given data
     */
    private double variance(double[] values){//==>
-      double variance = 0;
-      double mean = mean(values);
-      for(int dataLoc = 0; dataLoc < values.length; dataLoc++){
-         variance += (values[dataLoc]-mean)*(values[dataLoc]-mean);
-      }
-      variance /= values.length;
-
-      return variance;
+      return covariance(values,values);
    }//<==
+
+   /**
+    * Calculates the standard deviation of a double type array using the 
+    */
+   private double standardDev(double[] values){//==>
+      return Math.sqrt(variance(values));
+   }
 
    /**
     * IncomparableVectorException is a RuntimeException class made for throwing

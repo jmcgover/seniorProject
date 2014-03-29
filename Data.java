@@ -25,7 +25,7 @@ public class Data{
       }
       System.out.println("unknown: " + unknownPyro.toString());
    }
-   public static void calculateDistances(){
+   public static void calculateDistances(){//==>
       int dataSetLoc = -1;
       pearsonCorrelation = new ArrayList<Distance>();
       System.out.print("Caught unequal vectors: ");
@@ -38,7 +38,7 @@ public class Data{
             System.out.print(pyroData.get(dataSetLoc).getPyroId() + " " + pyroData.get(dataSetLoc).getNumPHeights()+ ", ");
          }
       }
-   }
+   }//<==
    /**
     * Retrieves input from the user via System.in for an existing file and
     * returns a Scanner object of a successfully opened file.
@@ -54,11 +54,12 @@ public class Data{
          try{
             String inFileName;
             System.out.print(goal + " filename (press RETURN for '" + defaultName  +"'): ");
-            inFileName = input.nextLine();
-            if(inFileName.isEmpty()){
-               return new Scanner(new File(defaultName)).useDelimiter(",");
-            }
-            return new Scanner(new File(inFileName)).useDelimiter(",");
+//            inFileName = input.nextLine();
+//            if(inFileName.isEmpty()){
+//               return new Scanner(new File(defaultName)).useDelimiter(",");
+//            }
+//            return new Scanner(new File(inFileName)).useDelimiter(",");
+            return new Scanner(new File(DEFAULT_DATASET)).useDelimiter(",");
          }
          catch(FileNotFoundException e){
             System.out.println("could not find file");
