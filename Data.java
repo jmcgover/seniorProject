@@ -53,9 +53,7 @@ public class Data{
       calculateDistances();
       System.out.println("Sorting...");
       Collections.sort(pearsonCorrelation);
-      for(int corrLoc = 0; corrLoc < pearsonCorrelation.size(); corrLoc++){
-         System.out.println((pearsonCorrelation.size()-corrLoc - 1) + ". " + pearsonCorrelation.get(corrLoc).toString());
-      }
+      printSpecies();
       System.out.println("-----");
       System.out.println("unknown: " + unknownPyro.toString());
       System.out.println("-----");
@@ -162,11 +160,14 @@ public class Data{
       double[] pHeightTemp = null;  //ArrayList implementation would 
       int numPHeights = 0;          //remove necessity for numPHeights
       double[] pHeight = null;
+      int lines = 0;
       Scanner inputFile = getFileScanner("dataset",filename);
       System.out.println("Reading " + filename + "...");
 
+      lines++;
       dataHeader = inputFile.nextLine();
       while(inputFile.hasNext()){
+         lines++;
 
          /* Reads the metadata for each pyroprint entry
           */
@@ -190,33 +191,32 @@ public class Data{
          for(int arrCopy = 0; arrCopy < pHeight.length; arrCopy++){
             pHeight[arrCopy] = pHeightTemp[arrCopy];
          }
-         /*GARBAGE I DONT WANT TO DELETE*/ //==>
-//            for(int arrLoc = 0; arrLoc < pHeight.length && inputFile.hasNextDouble(); arrLoc++){
-//               System.out.print("[" + arrLoc  +"]=");
-//               pHeight[arrLoc] = inputFile.nextDouble();
-//               System.out.print(pHeight[arrLoc]);
-//            }
-//            //DEBUG
-//            if(pHeight[pHeight.length-1] == 0.0){
-//               System.out.println(pyroId + " has zeros at the end: ");
-//               for(int zeroLoc = pHeight.length-1;pHeight[zeroLoc] != 0 ;zeroLoc--){
-//                  System.out.print("[" + zeroLoc + "]=" + pHeight[zeroLoc] + " ");
-//               }
-//            }
-//            System.out.print("# pHeights = " +numPHeights + " for: ");
-//<==
-
          /* Builds the pyroPrint data structure.
           */
          try{
             pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
          }
          catch(java.lang.ArrayIndexOutOfBoundsException e){
-            System.out.println("Print of size " + numPHeights + " read instead of " + Pyroprint.getRelevantVals() 
+            System.out.println(" Size " + numPHeights + " read instead of " + Pyroprint.getRelevantVals() 
                   + ": " + pyroId + " " + commonName);
          }
          inputFile.nextLine();
       }
       inputFile.close();
    }//<==
+   
+   public static void printSpecies(){
+      for(int corrLoc = 0; corrLoc < pearsonCorrelation.size(); corrLoc++){
+         if(unknownPyro.getCommonName().equals(pearsonCorrelation.get(corrLoc).getCommonName())){
+            System.out.println((pearsonCorrelation.size()-corrLoc - 1) + ". " 
+                  + pearsonCorrelation.get(corrLoc).toString());
+         }
+      }
+   }
+   public static void printAll(){
+      for(int corrLoc = 0; corrLoc < pearsonCorrelation.size(); corrLoc++){
+         System.out.println((pearsonCorrelation.size()-corrLoc - 1) + ". " 
+               + pearsonCorrelation.get(corrLoc).toString());
+      }
+   }
 }

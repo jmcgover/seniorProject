@@ -11,6 +11,9 @@ public class Distance
       if(this.distance > other.distance) return 1;
       return 0;
    }
+   public String getCommonName(){
+      return this.print.getCommonName();
+   }
    public String toString(){
       return this.distance + ": " + this.print.getCommonName() + "(" + this.print.getPyroId() + ")";
    }
