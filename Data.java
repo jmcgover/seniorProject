@@ -39,7 +39,10 @@ public class Data{
          datasetFilename = DEFAULT_DATASET;
          unknownFilename = DEFAULT_UNKNOWN;
          unknownLine = DEFAULT_LINE_NUM;
-         System.out.println("using default");
+         System.out.println("usage: java Data <datasetFilename.csv>" + 
+               " <unknownPrintFileName.csv> <lineNumber>");
+         System.out.println("using default: 'java Data " + DEFAULT_DATASET + " " 
+               + DEFAULT_UNKNOWN + " " + DEFAULT_LINE_NUM + "'");
       }
 
       unknownPyro = readUnknown(unknownFilename, unknownLine);
@@ -109,6 +112,7 @@ public class Data{
       /* Scrolls through the lines in the file to get to the desired unknown
        * data line.
        */
+      System.out.println("Going to line " + lineNum + "...");
       while(--lineNum > 1){
          inputFile.nextLine();
       }
