@@ -1,22 +1,30 @@
 public class Pyroprint{
+   private static final int RELEVANT_VALS = 93;
    private int pyroId;
    private String isolateId;
    private String commonName;
    private String appliedRegion;
-   double[] pHeight;
+   double[] pHeightOrig;
+   double[] pHeightComp;
 
    public Pyroprint(int pyroId, 
          String isolateId, 
          String commonName, 
          String appliedRegion,
-         double[] pHeight){
+         double[] pHeightIn){
       this.pyroId = pyroId;
       this.isolateId = isolateId;
       this.commonName = commonName;
       this.appliedRegion = appliedRegion;
-      this.pHeight = new double[pHeight.length];
-      for(int arrLoc = 0; arrLoc < pHeight.length; arrLoc++){
-         this.pHeight[arrLoc] = pHeight[arrLoc];
+      this.pHeightComp = new double[RELEVANT_VALS];
+      this.pHeightOrig = new double[pHeightIn.length];
+
+      for(int arrLoc = 0; arrLoc < RELEVANT_VALS; arrLoc++){
+         this.pHeightComp[arrLoc] = pHeightIn[arrLoc];
+         this.pHeightOrig[arrLoc] = pHeightIn[arrLoc];
+      }
+      for(int arrLoc = RELEVANT_VALS; arrLoc < pHeightIn.length; arrLoc++){
+         this.pHeightOrig[arrLoc] = pHeightIn[arrLoc];
       }
    }
    //PYROPRINT STUFFS //==>
@@ -35,14 +43,15 @@ public class Pyroprint{
    public String getAppliedRegion(){
       return appliedRegion;
    }
-   public double[] getPHeight(){
-      return pHeight;
-   }
    public int getNumPHeights(){
-      return pHeight.length;
+      return pHeightOrig.length;
+   }
+   static int getRelevantVals(){
+      return RELEVANT_VALS;
    }
    public String toString(){
-      return this.pyroId + ":" + this.isolateId + ":" + this.commonName +":" + this.appliedRegion + ":[" + pHeight.length + "]";
+      return this.pyroId + ":" + this.isolateId + ":" 
+         + this.commonName +":" + this.appliedRegion + ":[" + pHeightComp.length + "]";
    }
    public boolean equals(Object other){
       if(other == null) return false;
@@ -54,13 +63,9 @@ public class Pyroprint{
    }//<==
    //MATHS
    public double pearsonDist(Pyroprint other){
-      if(this.pHeight.length != other.pHeight.length){
-         throw new IncomparableVectorException("Vectors are not equal in length. this[ " 
-               +this.pHeight.length + "] other[" + other.pHeight.length + "]");
-      }
-      double covariance = covariance(this.pHeight,other.pHeight);
-      double thisStandardDev = standardDev(this.pHeight);
-      double otherStandardDev = standardDev(other.pHeight);
+      double covariance = covariance(this.pHeightComp,other.pHeightComp);
+      double thisStandardDev = standardDev(this.pHeightComp);
+      double otherStandardDev = standardDev(other.pHeightComp);
 
       return covariance/(thisStandardDev*otherStandardDev);
    }
@@ -73,7 +78,7 @@ public class Pyroprint{
     */
    private double mean(double[] values){//==>
       double mean = 0;
-      for(int dataLoc = 0; dataLoc < this.pHeight.length; dataLoc++){
+      for(int dataLoc = 0; dataLoc < values.length; dataLoc++){
          mean += values[dataLoc];
       }
       mean /= values.length;

@@ -7,36 +7,62 @@ public class Data{
    /* private Instance variables
     */
    private static final String DEFAULT_DATASET = "pyroprints.csv";
-   private static final String DEFAULT_UNKNOWN = "unknown.csv";
+   private static final String DEFAULT_UNKNOWN = "pyroprints.csv";
+   private static final int DEFAULT_LINE_NUM = 1;
    private static final int MAX_PHEIGHT_VALS = 103;
    private static ArrayList<Pyroprint> pyroData;
    private static Pyroprint unknownPyro;
    private static ArrayList<Distance> pearsonCorrelation;
 
-   public static void main(String[] args){
+   public static void main(String[] args)
+   throws FileNotFoundException{
+      String datasetFilename;
+      String unknownFilename;
+      int unknownLine = 0;
       pyroData = new ArrayList<Pyroprint>();
-      readDataSet();
-      unknownPyro = readSingular("unknown");
+      if(args.length == 1){
+         datasetFilename = args[0];
+         unknownFilename = DEFAULT_UNKNOWN;
+         unknownLine = DEFAULT_LINE_NUM;
+      }
+      else if(args.length == 2){
+         datasetFilename = args[0];
+         unknownFilename = args[1]; 
+         unknownLine = DEFAULT_LINE_NUM;
+      }
+      else if(args.length == 3){
+         datasetFilename = args[0];
+         unknownFilename = args[1]; 
+         unknownLine = Integer.parseInt(args[2]);
+      }
+      else{
+         datasetFilename = DEFAULT_DATASET;
+         unknownFilename = DEFAULT_UNKNOWN;
+         unknownLine = DEFAULT_LINE_NUM;
+         System.out.println("using default");
+      }
+
+      unknownPyro = readUnknown(unknownFilename, unknownLine);
+      System.out.println("-----");
       System.out.println("unknown: " + unknownPyro.toString());
+      System.out.println("-----");
+      readDataSet(datasetFilename);
       calculateDistances();
+      System.out.println("Sorting...");
       Collections.sort(pearsonCorrelation);
       for(int corrLoc = 0; corrLoc < pearsonCorrelation.size(); corrLoc++){
-         System.out.println(corrLoc + ": " + pearsonCorrelation.get(corrLoc).toString());
+         System.out.println((pearsonCorrelation.size()-corrLoc - 1) + ". " + pearsonCorrelation.get(corrLoc).toString());
       }
+      System.out.println("-----");
       System.out.println("unknown: " + unknownPyro.toString());
+      System.out.println("-----");
    }
    public static void calculateDistances(){//==>
       int dataSetLoc = -1;
       pearsonCorrelation = new ArrayList<Distance>();
-      System.out.print("Caught unequal vectors: ");
+      System.out.println("Calculating distances...");
       while(++dataSetLoc < pyroData.size()){
-         try{
-           pearsonCorrelation.add(new Distance(unknownPyro.pearsonDist(pyroData.get(dataSetLoc)),pyroData.get(dataSetLoc)));
-         }
-         catch(Pyroprint.IncomparableVectorException e){
-//            System.out.println("size not equal to " + unknownPyro.getNumPHeights()  + ": " + pyroData.get(dataSetLoc).toString() );
-            System.out.print(pyroData.get(dataSetLoc).getPyroId() + " " + pyroData.get(dataSetLoc).getNumPHeights()+ ", ");
-         }
+        pearsonCorrelation.add(new Distance(unknownPyro.pearsonDist(pyroData.get(dataSetLoc)),pyroData.get(dataSetLoc)));
       }
    }//<==
    /**
@@ -48,22 +74,11 @@ public class Data{
     *
     * @return Scanner of the File requested by the user
     */
-   public static Scanner getFileScanner(String goal, String defaultName){//==>
-      Scanner input = new Scanner(System.in);
+   public static Scanner getFileScanner(String goal, String fileName)//==>
+   throws FileNotFoundException{
       while(true){
-         try{
-            String inFileName;
-            System.out.print(goal + " filename (press RETURN for '" + defaultName  +"'): ");
-//            inFileName = input.nextLine();
-//            if(inFileName.isEmpty()){
-//               return new Scanner(new File(defaultName)).useDelimiter(",");
-//            }
-//            return new Scanner(new File(inFileName)).useDelimiter(",");
-            return new Scanner(new File(DEFAULT_DATASET)).useDelimiter(",");
-         }
-         catch(FileNotFoundException e){
-            System.out.println("could not find file");
-         }
+         System.out.println("Opening " + goal + " " + fileName + "...");
+         return new Scanner(new File(fileName)).useDelimiter(",");
       }
    }//<==
 
@@ -76,7 +91,8 @@ public class Data{
     *
     * @return Pyroprint object of the read pyroprint
     */
-   public static Pyroprint readSingular(String reason){//==>
+   public static Pyroprint readUnknown(String filename, int lineNum)//==>
+   throws FileNotFoundException{
       String dataHeader;            //May not ever use this, but want it anyway
       int pyroId;
       String isolateId;
@@ -85,9 +101,17 @@ public class Data{
       double[] pHeightTemp = null;  //ArrayList implementation would 
       int numPHeights = 0;          //remove necessity for numPHeights
       double[] pHeight = null;
-      Scanner inputFile = getFileScanner(reason, DEFAULT_DATASET);
+      Scanner inputFile = getFileScanner("unknown", filename);
+      System.out.println("Reading unknown " + filename + "...");
 
       dataHeader = inputFile.nextLine();
+
+      /* Scrolls through the lines in the file to get to the desired unknown
+       * data line.
+       */
+      while(--lineNum > 1){
+         inputFile.nextLine();
+      }
       /* Reads the metadata for each pyroprint entry
        */
       pyroId = inputFile.nextInt();
@@ -124,7 +148,8 @@ public class Data{
     *
     * and adds a new PyroPrint object to the data structure.
     */
-   public static void readDataSet(){//==>
+   public static void readDataSet(String filename)//==>
+   throws FileNotFoundException{
       String dataHeader;            //May not ever use this, but want it anyway
       int pyroId;
       String isolateId;
@@ -133,7 +158,8 @@ public class Data{
       double[] pHeightTemp = null;  //ArrayList implementation would 
       int numPHeights = 0;          //remove necessity for numPHeights
       double[] pHeight = null;
-      Scanner inputFile = getFileScanner("dataset",DEFAULT_DATASET);
+      Scanner inputFile = getFileScanner("dataset",filename);
+      System.out.println("Reading " + filename + "...");
 
       dataHeader = inputFile.nextLine();
       while(inputFile.hasNext()){
@@ -178,8 +204,13 @@ public class Data{
 
          /* Builds the pyroPrint data structure.
           */
-         pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
-//         System.out.println((pyroData.get(pyroData.size()-1)).toString());
+         try{
+            pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
+         }
+         catch(java.lang.ArrayIndexOutOfBoundsException e){
+            System.out.println("Print of size " + numPHeights + " read instead of " + Pyroprint.getRelevantVals() 
+                  + ": " + pyroId + " " + commonName);
+         }
          inputFile.nextLine();
       }
       inputFile.close();

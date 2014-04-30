@@ -12,7 +12,7 @@ public class Distance
       return 0;
    }
    public String toString(){
-      return this.print.getCommonName() + ": " + this.distance;
+      return this.distance + ": " + this.print.getCommonName() + "(" + this.print.getPyroId() + ")";
    }
 
 }
