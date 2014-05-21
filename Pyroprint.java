@@ -1,4 +1,5 @@
-public class Pyroprint{
+public class Pyroprint
+   implements java.io.Serializable{
    private static final int RELEVANT_VALS = 93;
    private int pyroId;
    private String isolateId;
@@ -99,7 +100,7 @@ public class Pyroprint{
       double covariance = 0;
       double xMean = mean(x);
       double yMean = mean(y);
-      double dataPoints = x.length;     //TODO may need to change to the min value
+      double dataPoints = x.length;     
       for(int dataLoc = 0; dataLoc < dataPoints; dataLoc++){
          covariance += (x[dataLoc] - xMean)*(y[dataLoc] - yMean);
       }
