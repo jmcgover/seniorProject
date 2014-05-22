@@ -1,5 +1,5 @@
 public class Pyroprint
-   implements Serializable{
+   implements java.io.Serializable{
    private static final int RELEVANT_VALS = 93;
    private int pyroId;
    private String isolateId;

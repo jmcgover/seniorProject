@@ -17,6 +17,9 @@ public class Distance
    public double getDistance(){
       return this.distance;
    }
+   public Pyroprint getPyro(){
+      return print;
+   }
    public String toString(){
       return String.format("%.5f: %s(%s)",this.distance,this.print.getCommonName(),this.print.getPyroId());
    }

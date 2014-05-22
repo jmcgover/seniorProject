@@ -1,6 +1,7 @@
 public class Pyroprint
    implements java.io.Serializable{
    private static final int RELEVANT_VALS = 93;
+   private int lineNum;
    private int pyroId;
    private String isolateId;
    private String commonName;
@@ -8,11 +9,12 @@ public class Pyroprint
    double[] pHeightOrig;
    double[] pHeightComp;
 
-   public Pyroprint(int pyroId, 
+   public Pyroprint(int lineNum, int pyroId, 
          String isolateId, 
          String commonName, 
          String appliedRegion,
          double[] pHeightIn){
+      this.lineNum = lineNum;
       this.pyroId = pyroId;
       this.isolateId = isolateId;
       this.commonName = commonName;

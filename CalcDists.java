@@ -124,6 +124,7 @@ public class CalcDists{
    public static Pyroprint readUnknown(String filename, int lineNum)//==>
       throws FileNotFoundException{
       String dataHeader;            //May not ever use this, but want it anyway
+      int pyroLine = lineNum;
       int pyroId;
       String isolateId;
       String commonName;
@@ -168,7 +169,7 @@ public class CalcDists{
       inputFile.close();
       /* Builds the pyroPrint data structure.
       */
-      return new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight);
+      return new Pyroprint(pyroLine,pyroId, isolateId, commonName, appliedRegion, pHeight);
    }//<==
 
    /**
@@ -229,7 +230,7 @@ public class CalcDists{
          /* Builds the pyroPrint data structure.
          */
          try{
-            pyroData.add(new Pyroprint(pyroId, isolateId, commonName, appliedRegion, pHeight));
+            pyroData.add(new Pyroprint(lines, pyroId, isolateId, commonName, appliedRegion, pHeight));
          }
          catch(java.lang.ArrayIndexOutOfBoundsException e){
             System.out.println(String.format("Line %d: size %d read (needed %d): %d %s",
@@ -252,6 +253,7 @@ public class CalcDists{
       pearsonCorrelation.trimToSize();
       System.out.println("Writing to " + filename + "...");
       objectOut.writeObject(pearsonCorrelation);
+      fileOut.close();
    }
    public static ArrayList<Distance> readFromFile(String filename)
       throws FileNotFoundException, IOException, ClassNotFoundException{
@@ -259,6 +261,7 @@ public class CalcDists{
       ObjectInputStream objectIn = new ObjectInputStream(fileIn);
       System.out.println("Reading from " + filename + "...");
       Object obj = objectIn.readObject();
+      fileIn.close();
 
       ArrayList<Distance> returnArray = null;
       if(obj instanceof ArrayList){

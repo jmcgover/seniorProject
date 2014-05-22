@@ -66,17 +66,18 @@ public class Experiment{
          System.out.println(String.format("Beginning experiment for %s...",calcDists.get(0).getCommonName()));
          if(countTopK(k,alpha,calcDists)){
             successes++;
+            System.out.println("Line " + unknownLine);
             System.out.println("--------------");
             System.out.println("Woo! SUCCESS!!");
          }
          else{
             failures++;
+            System.out.println("Line " + unknownLine);
             System.out.println("--------------");
             System.out.println("FAILURE");
          }
          System.out.println("--------------");
       }
-      System.out.println("Line number " + unknownLine + ": ");
       System.out.println(String.format("%.2f percent right, as usual.",100*successes/(1.0*successes+failures)));
    }
 
@@ -141,6 +142,7 @@ public class Experiment{
          return false;
       }
    }//<==
+
 //   public static void printSpeciesCount(){//==>
 //      System.out.println("Species Table:");
 //      System.out.println("-------------");
