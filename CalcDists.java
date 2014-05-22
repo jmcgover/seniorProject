@@ -47,6 +47,7 @@ public class CalcDists{
       }
 
 
+      beginTime = System.nanoTime();
       beginCalc = System.nanoTime();
       readDataSet(datasetFilename);
       System.out.println("PARSE Time: " + ((System.nanoTime() - beginCalc)*0.000000001) + "s");
@@ -85,6 +86,7 @@ public class CalcDists{
       }
       System.out.println("~~~~~");
       System.out.println("Finished calculations.");
+      System.out.println("FINAL Time: " + ((System.nanoTime() - beginTime)*0.000000001) + "s");
    }
 
    public static void calculateDistances(){//==>
